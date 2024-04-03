@@ -220,13 +220,13 @@ def parse_options():
     parser.add_argument("--image", dest="image", help="EMLinux image name",
             metavar="IMAGENAME", required=True)
     parser.add_argument("--sbom-format", dest="sbom_format", help="spdx or cyclonedx",
-            metavar="SBOMFORMAT", required=True)
+            metavar="SBOM_FORMAT", required=True)
     parser.add_argument("--distro", dest="distro", help="debian distro name(e.g. bookworm)",
             default="bookworm", metavar="DISTRO")
     parser.add_argument("--licenses", dest="user_defined_licenses", help="license yaml file",
             metavar="LICENSES")
     parser.add_argument("--license-mapping", dest="user_defined_license_mapping", help="license mapping yaml file",
-            metavar="LICENSESMAPPING")
+            metavar="LICENSE_MAPPING")
     parser.add_argument("--supplier", dest="supplier", help="Supplier name(e.g. company name)",
             metavar="SUPPLIER", required=True)
     parser.add_argument("--product", dest="product", help="Product name",
