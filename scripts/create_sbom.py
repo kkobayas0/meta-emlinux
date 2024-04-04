@@ -54,7 +54,7 @@ def get_package_info_from_control(dl_dir, repo_isar_dir, distro, image_distro, d
         pkgname = None
         with debian.debfile.DebFile(debfile) as deb:
             control = deb.debcontrol()
-            pkgname = control.get("Package", "Unkown")
+            pkgname = control.get("Package", "Unknown")
             arch = control.get('Architecture', 'Unknown')
             desc = control.get("Description", "")
 
@@ -87,8 +87,8 @@ def parse_copyright_file(copyright_file):
                 if p.license:
                     licenses.append(p.license.synopsis)
                 else:
-                    if not "unkown" in licenses:
-                        licenses.append("unkown")
+                    if not "unknown" in licenses:
+                        licenses.append("unknown")
 
     return sorted(licenses)
 
@@ -138,7 +138,7 @@ def find_copyright_files(rootfs, installed_pkgs, user_defined_licenses):
             if os.path.exists(path):
                 installed_pkgs[pkg]["licenses"] = parse_copyright_file(path)
             else:
-                installed_pkgs[pkg]["licenses"] = ["unkown"]
+                installed_pkgs[pkg]["licenses"] = ["unknown"]
 
 def read_user_defined_license_file(user_defined_licenses):
     name = os.path.join(os.path.dirname(__file__), "../conf/licenses/licenses.yml")
@@ -224,9 +224,9 @@ def parse_options():
     parser.add_argument("--distro", dest="distro", help="debian distro name(e.g. bookworm)",
             default="bookworm", metavar="DISTRO")
     parser.add_argument("--licenses", dest="user_defined_licenses", help="license yaml file",
-            metavar="LICENSES")
+            metavar="FILE")
     parser.add_argument("--license-mapping", dest="user_defined_license_mapping", help="license mapping yaml file",
-            metavar="LICENSE_MAPPING")
+            metavar="FILE")
     parser.add_argument("--supplier", dest="supplier", help="Supplier name(e.g. company name)",
             metavar="SUPPLIER", required=True)
     parser.add_argument("--product", dest="product", help="Product name",
