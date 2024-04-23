@@ -69,9 +69,9 @@ RUN bash -c 'if test -n "$http_proxy"; then git config --global http.proxy "$htt
 RUN bash -c 'if test -n "$https_proxy"; then git config --global https.proxy "$https_proxy"; fi'
 RUN bash -c 'if test -n "$no_proxy"; then git config --global core.noproxy "$no_proxy"; fi'
 
-RUN pip install --user pip install cyclonedx-python-lib --break-system-packages
-RUN pip install --user pip install jsonschema --break-system-packages
-RUN pip install --user spdx-tools --break-system-packages
+RUN pip install --user pip install cyclonedx-python-lib==7.3.1 --break-system-packages
+RUN pip install --user pip install jsonschema==4.21.1 --break-system-packages
+RUN pip install --user spdx-tools==0.8.2 --break-system-packages
 
 RUN mkdir work
 WORKDIR /home/build/work
