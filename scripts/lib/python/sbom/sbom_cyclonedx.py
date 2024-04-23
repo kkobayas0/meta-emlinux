@@ -2,9 +2,10 @@ from packageurl import PackageURL
 
 from cyclonedx.exception import MissingOptionalDependencyException
 from cyclonedx.factory.license import LicenseFactory
-from cyclonedx.model import OrganizationalEntity, HashType
+from cyclonedx.model import HashType
 from cyclonedx.model.bom import Bom
 from cyclonedx.model.component import Component, ComponentType
+from cyclonedx.model.contact import OrganizationalEntity
 from cyclonedx.model.bom_ref import BomRef
 from cyclonedx.output.json import JsonV1Dot5
 from cyclonedx.schema import SchemaVersion
