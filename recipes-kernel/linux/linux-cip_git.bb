@@ -24,6 +24,7 @@ SRC_URI:append:qemu-amd64 = " file://qemu-amd64_defconfig"
 SRC_URI:append:generic-x86-64 = " file://generic-x86-64_defconfig"
 SRC_URI:append:raspberrypi3bplus-64 = " file://raspberrypi3-64_defconfig"
 SRC_URI:append:raspberrypi4b-64 = " file://raspberrypi4-64_defconfig"
+SRC_URI:append:raspberrypi400-64 = " file://raspberrypi4-64_defconfig"
 
 SRC_URI[sha256sum] = "1caa1b8e24bcfdd55c3cffd8f147f3d33282312989d85c82fc1bc39b808f3d6b"
 SRCREV = "f9ab8e7cbe8c82ae2816e96b065638c1dbe70158"
