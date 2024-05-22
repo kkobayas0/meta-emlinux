@@ -42,10 +42,18 @@ do_shared_workdir_prepend () {
 # CVE-1999-0656: This issue is that specific to ugidd, part of the old user-mode NFS server.
 # CVE-2006-2932: Specific to RHEL. 5.10.y is not affected.
 # CVE-2023-1476: Specific to RHEL. 5.10.y is not affected.
+# CVE-2021-0399: This is false positive because it is Android kernel issue.
+# CVE-2021-1076: This is false positive because it is NVIDIA driver issue.
+# CVE-2021-29256: This is false positive because it is ARM Mali driver issue.
+# CVE-2021-3492: This is false positive becuase it is Ubuntu specified kernel issue.
+# CVE-2021-39802: This is false positive because it is Android kernel issue.
+# CVE-2022-36397: This is false positive because it is Intel QAT driver issue.
 CVE_CHECK_WHITELIST = "\
     CVE-2021-43057 CVE-2015-8955 CVE-2020-8834 \
     CVE-2017-6264 CVE-2017-1000377 CVE-2007-2764 \
     CVE-2007-4998 CVE-2008-2544 CVE-2016-3699 \
     CVE-1999-0524 CVE-1999-0656 CVE-2006-2932 \
-    CVE-2023-1476 \
+    CVE-2023-1476 CVE-2021-0399 CVE-2021-1076 \
+    CVE-2021-29256 CVE-2021-3492 CVE-2021-39802 \
+    CVE-2022-36397 \
 "
