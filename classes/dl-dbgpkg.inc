@@ -70,7 +70,8 @@ do_install_debug_symbol() {
     sudo -E mount --bind /dev/pts ${ROOTFSDIR}/dev/pts
     sudo -E mount -t proc none ${ROOTFSDIR}/proc
 
-    cp "${DEPLOY_DIR}/images/${MACHINE}/${TARGET_ROOTFS_MANIFEST}".manifest /tmp
+    DBGSYMHOME="$(mktemp -d /tmp/dbgsymhomeXXXXXXXX)"
+    cp "${DEPLOY_DIR}/images/${MACHINE}/${TARGET_ROOTFS_MANIFEST}".manifest "${DBGSYMHOME}"
 
     ### setup network & apt environment
     if [ ${not_exist_resolvconf} -ne 0 ]; then
@@ -96,7 +97,7 @@ do_install_debug_symbol() {
     sudo -E chroot ${ROOTFSDIR} sh -c "rm /var/lib/dpkg/status; touch /var/lib/dpkg/status; apt-get -y -q update"
 
     ### download debug symbol packages
-    cat << 'EOS' > /tmp/dl_dbgsym.sh
+    cat << 'EOS' > "${DBGSYMHOME}/dl_dbgsym.sh"
 while read line
 do
     tmpName=`echo ${line} | cut -d'|' -f3`
@@ -121,7 +122,7 @@ do
     fi
 done < ${TARGET_ROOTFS_MANIFEST}.manifest
 EOS
-    sudo -E chroot ${ROOTFSDIR} sh -c "(cd /tmp && bash ./dl_dbgsym.sh)"
+    sudo -E chroot ${ROOTFSDIR} sh -c "(cd ${DBGSYMHOME} && bash ./dl_dbgsym.sh)"
 
     ### prepare patched source
     if [ "${PREPARE_PATCHED_SRC}" = "1" ]; then
@@ -137,7 +138,7 @@ EOS
 
     ### clean up and umount output directory
     sudo -E rm ${ROOTFSDIR}/etc/apt/apt.conf.d/50${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/preferences.d/${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/sources.list.d/${EML_SELF_BUILD}.list
-    rm ${ROOTFSDIR}/tmp/${TARGET_ROOTFS_MANIFEST}.manifest
+    rm ${ROOTFSDIR}/${DBGSYMHOME}/${TARGET_ROOTFS_MANIFEST}.manifest
     sudo -E umount ${ROOTFSDIR}/proc
     sudo -E umount ${ROOTFSDIR}/dev/pts
     sudo -E umount ${ROOTFSDIR}/dev
