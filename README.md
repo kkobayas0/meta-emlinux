@@ -12,6 +12,13 @@ EMLinux supported build host OS is Debian 11 or greater.
 
 You can build and image by docker. If you want to build image, you need docker engine and docker-compose. Please refer to official web site to install the docker engine (https://docs.docker.com/engine/install/) and the docker-compose command (https://docs.docker.com/compose/install/other/).
 
+### Install the qemu-user-static
+You need to install the qemu-user-static package on the host PC to enable cross-building on docker.
+
+```
+$ sudo apt install qemu-user-static
+```
+
 ### Build a docker image
 
 The docker/ directory contains build script and docker-compose.yml file.
