@@ -37,7 +37,9 @@ RUN apt-get install --fix-missing -y \
   screen \
   socat \
   patchelf \
-  sqlite3
+  sqlite3 \
+  umoci \
+  skopeo
 
 RUN useradd -m build -u $uid
 RUN gpasswd -a build sbuild
