@@ -62,8 +62,6 @@ DBG_SYMBOL="dbgsym-apt"
 DEBIAN_DBG_REPO = "http://deb.debian.org/debian-debug"
 
 do_install_debug_symbol() {
-    local not_exist_resolvconf=`file '${ROOTFSDIR}'/etc/resolv.conf 2>&1 | grep "cannot open" | wc -c`
-
     ### prepare directory for chroot environment
     sudo -E mount --bind /tmp ${ROOTFSDIR}/tmp
     sudo -E mount --bind /dev ${ROOTFSDIR}/dev
@@ -74,7 +72,7 @@ do_install_debug_symbol() {
     cp "${DEPLOY_DIR}/images/${MACHINE}/${TARGET_ROOTFS_MANIFEST}".manifest "${DBGSYMHOME}"
 
     ### setup network & apt environment
-    if [ ${not_exist_resolvconf} -ne 0 ]; then
+    if [ ! -e "${ROOTFSDIR}/etc/resolv.conf" ]; then
         sudo cp /etc/resolv.conf ${ROOTFSDIR}/etc/resolv.conf
     else
         sudo mv ${ROOTFSDIR}/etc/resolv.conf ${ROOTFSDIR}/etc/resolv.conf.orig
@@ -147,7 +145,7 @@ EOS
     sudo -E umount ${ROOTFSDIR}/dev
     sudo -E umount ${ROOTFSDIR}/tmp
     cleanup_local_isarapt
-    if [ ${not_exist_resolvconf} -ne 0 ]; then
+    if [ ! -e "${ROOTFSDIR}/etc/resolv.conf.orig" ]; then
         sudo -E rm ${ROOTFSDIR}/etc/resolv.conf
     else
         sudo mv ${ROOTFSDIR}/etc/resolv.conf.orig ${ROOTFSDIR}/etc/resolv.conf
