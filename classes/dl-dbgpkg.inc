@@ -138,7 +138,9 @@ EOS
 
     ### clean up and umount output directory
     sudo -E rm ${ROOTFSDIR}/etc/apt/apt.conf.d/50${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/preferences.d/${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/sources.list.d/${EML_SELF_BUILD}.list
+    rm "${DBGSYMHOME}/dl_dbgsym.sh"
     rm ${ROOTFSDIR}/${DBGSYMHOME}/${TARGET_ROOTFS_MANIFEST}.manifest
+    rmdir "${DBGSYMHOME}"
     sudo -E umount ${ROOTFSDIR}/proc
     sudo -E umount ${ROOTFSDIR}/dev/pts
     sudo -E umount ${ROOTFSDIR}/dev
