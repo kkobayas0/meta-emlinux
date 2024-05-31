@@ -98,22 +98,23 @@ do_install_debug_symbol() {
 
     ### download debug symbol packages
     cat << 'EOS' > "${DBGSYMHOME}/dl_dbgsym.sh"
-while read line
+#!/bin/sh
+while read -r line
 do
-    tmpName=`echo ${line} | cut -d'|' -f3`
+    tmpName=$(echo "${line}" | cut -d'|' -f3)
     pkgName=${tmpName%%\:${DISTRO_ARCH}}
     # echo "PKG: ${pkgName}" >> /etc/pkg-list.txt
-    pkgVer=`echo ${line} | cut -d'|' -f4`
-    dbgsym_pkg=`apt-cache search "^${pkgName}-dbgsym" | cut -d' ' -f1`
+    pkgVer=$(echo "${line}" | cut -d'|' -f4)
+    dbgsym_pkg=$(apt-cache search "^${pkgName}-dbgsym" | cut -d' ' -f1)
     if [ -z "${dbgsym_pkg}" ]; then
-        dbgsym_pkg=`apt-cache search "^${pkgName}-dbg" | cut -d' ' -f1`
+        dbgsym_pkg=$(apt-cache search "^${pkgName}-dbg" | cut -d' ' -f1)
     fi
     if [ -n "${dbgsym_pkg}" ]; then
-        _chk_ver=`apt-cache show ${dbgsym_pkg} | grep "^Version"`
+        _chk_ver=$(apt-cache show "${dbgsym_pkg}" | grep "^Version")
 	chk_ver=${_chk_ver##Version\:\ }
 	if [ "${chk_ver}" = "${pkgVer}" ]; then
-            apt-get install ${pkgName}=${pkgVer} -y
-            apt-get install ${dbgsym_pkg}=${pkgVer} -y
+            apt-get install "${pkgName}"="${pkgVer}" -y
+            apt-get install "${dbgsym_pkg}"="${pkgVer}" -y
 	else
 	    echo "[INFO]: Found debug symbol package but package version is not match. pkg: ${dbgsym_pkg} , pkgVer: ${pkgVer} , getVer:${chk_ver}"
 	fi
