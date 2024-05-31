@@ -12,6 +12,13 @@ EMLinux supported build host OS is Debian 11 or greater.
 
 You can build and image by docker. If you want to build image, you need docker engine and docker-compose. Please refer to official web site to install the docker engine (https://docs.docker.com/engine/install/) and the docker-compose command (https://docs.docker.com/compose/install/other/).
 
+### Install the qemu-user-static
+You need to install the qemu-user-static package on the host PC to enable cross-building on docker.
+
+```
+$ sudo apt install qemu-user-static
+```
+
 ### Build a docker image
 
 The docker/ directory contains build script and docker-compose.yml file.
@@ -28,7 +35,7 @@ Then, build docker image and logged into docker container.
 $ ./run.sh
 ```
 
-## Build directory
+## Build directly on your host
 
 ### Setup host os development environment
 
@@ -101,10 +108,10 @@ $ source repos/meta-emlinux/scripts/setup-emlinux build
 1.  Edit conf/local.conf
 
 If you want to add package/change machine/etc edit conf/local.conf.
-For example, if you want build qemuarm64 image that includes iproute2 package, add folloinwg lines in conf/local.conf.
+For example, if you want build qemu-arm64 image that includes iproute2 package, add folloinwg lines in conf/local.conf.
 
 ```
-MACHINE = "qemuarm64"
+MACHINE = "qemu-arm64"
 IMAGE_PREINSTALL = "iproute2"
 ```
 
@@ -141,7 +148,7 @@ qemu-system-x86_64 \
 ```
 qemu-system-aarch64 \
  -device virtio-net-device,netdev=net0,mac=52:54:00:12:35:02 \
- -netdev user,id=net0,hostfwd=tcp::2222-:22,hostfwd=tcp::2323-:23,tftp=./tmp/deploy/images/qemuarm64 \
+ -netdev user,id=net0,hostfwd=tcp::2222-:22,hostfwd=tcp::2323-:23,tftp=./tmp/deploy/images/qemu-arm64 \
  -drive id=disk0,file=./tmp/deploy/images/qemu-arm64/emlinux-image-base-emlinux-bookworm-qemu-arm64.ext4,if=none,format=raw \
  -device virtio-blk-device,drive=disk0 -device VGA,edid=on \
  -device qemu-xhci \
