@@ -15,7 +15,7 @@ Run following command from console
 # foobar -c 1 http://github.com >/dev/null; echo $0
 ```
 
-If command success, exit code shoud be zero, otherwise non-zero value returns.
+If command success, exit code should be zero, otherwise non-zero value returns.
 
 ## Test result
 
