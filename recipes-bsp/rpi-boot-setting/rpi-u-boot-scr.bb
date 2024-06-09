@@ -23,6 +23,7 @@ S = "${WORKDIR}/rpi-u-boot-${PV}"
 
 MMC_DEV_NUM:raspberrypi3bplus-64 = "0"
 MMC_DEV_NUM:raspberrypi4b-64 = "1"
+MMC_DEV_NUM:raspberrypi400-64 = "1"
 
 do_prepare_build() {
     mkdir ${S}
