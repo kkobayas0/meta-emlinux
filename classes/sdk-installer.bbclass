@@ -111,6 +111,14 @@ setup_toolchains_for_container() {
     sudo chmod 755 "${ROOTFSDIR}/etc/profile.d/${bname}.sh"
 }
 
+setup_docker_files() {
+    templates_dir="${TOPDIR}/../repos/meta-emlinux/templates/containerized-sdk"
+    cp "${templates_dir}/Dockerfile" "${DEPLOY_DIR_IMAGE}"
+    cp "${templates_dir}/docker-compose.yml" "${DEPLOY_DIR_IMAGE}"
+    sed -i "s/@CONTAINER_IMAGE_NAME@/${CONTAINER_IMAGE_NAME}/g" "${DEPLOY_DIR_IMAGE}/Dockerfile"
+    sed -i "s/@CONTAINER_IMAGE_TAG@/${CONTAINER_IMAGE_TAG}/g" "${DEPLOY_DIR_IMAGE}/Dockerfile"
+}
+
 ROOTFS_POSTPROCESS_COMMAND:append:class-sdk = " rename_installer_script setup_kernel_source_dir"
 rename_installer_script() {
     setupfile="${ROOTFSDIR}/environment-setup-${MACHINE}-${DISTRO}"
@@ -118,6 +126,7 @@ rename_installer_script() {
 
     if [ "${SDK_FORMATS}" = "docker-archive" ]; then
         setup_toolchains_for_container "${ROOTFSDIR}/environment-setup-${MACHINE}-${DISTRO}"
+        setup_docker_files
     fi
 }
 
