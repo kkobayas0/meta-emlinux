@@ -52,9 +52,9 @@ do_install_source_package() {
     fi
     mkdir -p ${DEPLOY_DIR}/sources/${MACHINE}
     sudo -E mount --bind /tmp ${ROOTFSDIR}/tmp
-    mkdir -p ${ROOTFSDIR}/tmp/source_dir
-    sudo -E mount --bind ${DEPLOY_DIR}/sources/${MACHINE} ${ROOTFSDIR}/tmp/source_dir
-    cp ${ROOTFS_MANIFEST_DEPLOY_DIR}/${ROOTFS_PACKAGE_SUFFIX}.manifest ${ROOTFSDIR}/tmp/source_dir/
+    SRCDIRHOME="$(mktemp -d /tmp/srcdirhomeXXXXXXXX)"
+    sudo -E mount --bind ${DEPLOY_DIR}/sources/${MACHINE} "${ROOTFSDIR}${SRCDIRHOME}"
+    cp ${ROOTFS_MANIFEST_DEPLOY_DIR}/${ROOTFS_PACKAGE_SUFFIX}.manifest "${ROOTFSDIR}${SRCDIRHOME}"
 
     ### setup network & apt environment
     if [ ${not_exist_resolvconf} -ne 0 ]; then
@@ -72,12 +72,12 @@ do_install_source_package() {
 
     ### download source packages
     sudo -E chroot --userspec=$(id -u):$(id -g) ${ROOTFSDIR} sh -c \
-	 "(cd /tmp/source_dir && cat ${ROOTFS_PACKAGE_SUFFIX}.manifest | awk -F '|' '{system(\"mkdir -p \"\$1\"; apt-get source --download-only \"\$1\"=\"\$2\"; mv \"\$1\"_* \"\$1\"\")}')"
+	 "(cd ${SRCDIRHOME} && cat ${ROOTFS_PACKAGE_SUFFIX}.manifest | awk -F '|' '{system(\"mkdir -p \"\$1\"; apt-get source --download-only \"\$1\"=\"\$2\"; mv \"\$1\"_* \"\$1\"\")}')"
 
     ### clean up and umount output directory
     sudo -E rm ${ROOTFSDIR}/etc/apt/apt.conf.d/30-${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/preferences.d/${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/sources.list.d/${EML_SELF_BUILD}.list
-    rm ${ROOTFSDIR}/tmp/source_dir/${ROOTFS_PACKAGE_SUFFIX}.manifest
-    sudo -E umount ${ROOTFSDIR}/tmp/source_dir
+    rm "${ROOTFSDIR}${SRCDIRHOME}/${ROOTFS_PACKAGE_SUFFIX}.manifest"
+    sudo -E umount "${ROOTFSDIR}${SRCDIRHOME}"
     sudo -E umount ${ROOTFSDIR}/tmp
     cleanup_local_isarapt
     if [ ${not_exist_resolvconf} -ne 0 ]; then
