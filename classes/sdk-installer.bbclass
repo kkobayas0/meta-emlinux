@@ -14,7 +14,7 @@ EMLINUX_SDK_FILE_PATH="${DEPLOY_DIR_IMAGE}/${EMLINUX_SDK_FILE_NAME}"
 EMLINUX_SDK_INSTALLER_NAME="${PN}-${DISTRO}-${MACHINE}-sdk-installer.sh"
 EMLINUX_SDK_INSTALLER_FILE_PATH="${DEPLOY_DIR_IMAGE}/${EMLINUX_SDK_INSTALLER_NAME}"
 
-create_sdk_installer_script() {
+get_toolchain_prefix() {
     toolchain_prefix=""
     if [ "${DISTRO_ARCH}" = "amd64" ]; then
         toolchain_prefix="x86_64-linux-gnu"
@@ -23,7 +23,11 @@ create_sdk_installer_script() {
     elif [ "${DISTRO_ARCH}" = "armhf" ]; then
         toolchain_prefix="arm-linux-gnueabihf"
     fi
+    echo "${toolchain_prefix}"
+}
 
+create_sdk_installer_script() {
+    toolchain_prefix=$(get_toolchain_prefix)
     cat << "EOF" > ${EMLINUX_SDK_INSTALLER_FILE_PATH}
 #!/bin/bash
 
@@ -95,12 +99,38 @@ python do_create_sdk_installer() {
 
 do_image_tar[postfuncs] += "do_create_sdk_installer"
 
+setup_toolchains_for_container() {
+    tmpl_file="$1"
+    toolchain_prefix=$(get_toolchain_prefix)
+    sudo sed -i '1d' "${tmpl_file}"
+    sudo sed -i 's:@EMLINUX_SDK_INSTALL_DIR@::g' "${tmpl_file}"
+    sudo sed -i -e "s/@EMLINUX_SDK_TOOLCHAIN_PREFIX@/${toolchain_prefix}/g" "${tmpl_file}"
+    sudo mkdir -p "${ROOTFSDIR}/etc/profile.d/"
+    bname=$(basename ${tmpl_file})
+    sudo mv "${tmpl_file}" "${ROOTFSDIR}/etc/profile.d/${bname}.sh"
+    sudo chmod 755 "${ROOTFSDIR}/etc/profile.d/${bname}.sh"
+}
+
+setup_docker_files() {
+    templates_dir="${TOPDIR}/../repos/meta-emlinux/templates/containerized-sdk"
+    cp "${templates_dir}/Dockerfile" "${DEPLOY_DIR_IMAGE}"
+    cp "${templates_dir}/docker-compose.yml" "${DEPLOY_DIR_IMAGE}"
+    sed -i "s/@CONTAINER_IMAGE_NAME@/${CONTAINER_IMAGE_NAME}/g" "${DEPLOY_DIR_IMAGE}/Dockerfile"
+    sed -i "s/@CONTAINER_IMAGE_TAG@/${CONTAINER_IMAGE_TAG}/g" "${DEPLOY_DIR_IMAGE}/Dockerfile"
+}
+
 ROOTFS_POSTPROCESS_COMMAND:append:class-sdk = " rename_installer_script setup_kernel_source_dir"
 rename_installer_script() {
     setupfile="${ROOTFSDIR}/environment-setup-${MACHINE}-${DISTRO}"
     sudo mv "${ROOTFSDIR}/environment-setup-template" "${ROOTFSDIR}/environment-setup-${MACHINE}-${DISTRO}"
+
+    if [ "${SDK_FORMATS}" = "docker-archive" ]; then
+        setup_toolchains_for_container "${ROOTFSDIR}/environment-setup-${MACHINE}-${DISTRO}"
+        setup_docker_files
+    fi
 }
 
 setup_kernel_source_dir() {
     (cd ${ROOTFSDIR}/usr/src && sudo ln -s linux-headers-* kernel)
 }
+

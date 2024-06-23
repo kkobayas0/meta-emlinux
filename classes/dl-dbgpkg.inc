@@ -62,18 +62,17 @@ DBG_SYMBOL="dbgsym-apt"
 DEBIAN_DBG_REPO = "http://deb.debian.org/debian-debug"
 
 do_install_debug_symbol() {
-    local not_exist_resolvconf=`file '${ROOTFSDIR}'/etc/resolv.conf 2>&1 | grep "cannot open" | wc -c`
-
     ### prepare directory for chroot environment
     sudo -E mount --bind /tmp ${ROOTFSDIR}/tmp
     sudo -E mount --bind /dev ${ROOTFSDIR}/dev
     sudo -E mount --bind /dev/pts ${ROOTFSDIR}/dev/pts
     sudo -E mount -t proc none ${ROOTFSDIR}/proc
 
-    cp "${DEPLOY_DIR}/images/${MACHINE}/${TARGET_ROOTFS_MANIFEST}".manifest /tmp
+    DBGSYMHOME="$(mktemp -d /tmp/dbgsymhomeXXXXXXXX)"
+    cp "${DEPLOY_DIR}/images/${MACHINE}/${TARGET_ROOTFS_MANIFEST}".manifest "${DBGSYMHOME}"
 
     ### setup network & apt environment
-    if [ ${not_exist_resolvconf} -ne 0 ]; then
+    if [ ! -e "${ROOTFSDIR}/etc/resolv.conf" ]; then
         sudo cp /etc/resolv.conf ${ROOTFSDIR}/etc/resolv.conf
     else
         sudo mv ${ROOTFSDIR}/etc/resolv.conf ${ROOTFSDIR}/etc/resolv.conf.orig
@@ -96,23 +95,24 @@ do_install_debug_symbol() {
     sudo -E chroot ${ROOTFSDIR} sh -c "rm /var/lib/dpkg/status; touch /var/lib/dpkg/status; apt-get -y -q update"
 
     ### download debug symbol packages
-    cat << 'EOS' > /tmp/dl_dbgsym.sh
-while read line
+    cat << 'EOS' > "${DBGSYMHOME}/dl_dbgsym.sh"
+#!/bin/sh
+while read -r line
 do
-    tmpName=`echo ${line} | cut -d'|' -f3`
+    tmpName=$(echo "${line}" | cut -d'|' -f3)
     pkgName=${tmpName%%\:${DISTRO_ARCH}}
     # echo "PKG: ${pkgName}" >> /etc/pkg-list.txt
-    pkgVer=`echo ${line} | cut -d'|' -f4`
-    dbgsym_pkg=`apt-cache search "^${pkgName}-dbgsym" | cut -d' ' -f1`
+    pkgVer=$(echo "${line}" | cut -d'|' -f4)
+    dbgsym_pkg=$(apt-cache search "^${pkgName}-dbgsym" | cut -d' ' -f1)
     if [ -z "${dbgsym_pkg}" ]; then
-        dbgsym_pkg=`apt-cache search "^${pkgName}-dbg" | cut -d' ' -f1`
+        dbgsym_pkg=$(apt-cache search "^${pkgName}-dbg" | cut -d' ' -f1)
     fi
     if [ -n "${dbgsym_pkg}" ]; then
-        _chk_ver=`apt-cache show ${dbgsym_pkg} | grep "^Version"`
+        _chk_ver=$(apt-cache show "${dbgsym_pkg}" | grep "^Version")
 	chk_ver=${_chk_ver##Version\:\ }
 	if [ "${chk_ver}" = "${pkgVer}" ]; then
-            apt-get install ${pkgName}=${pkgVer} -y
-            apt-get install ${dbgsym_pkg}=${pkgVer} -y
+            apt-get install "${pkgName}"="${pkgVer}" -y
+            apt-get install "${dbgsym_pkg}"="${pkgVer}" -y
 	else
 	    echo "[INFO]: Found debug symbol package but package version is not match. pkg: ${dbgsym_pkg} , pkgVer: ${pkgVer} , getVer:${chk_ver}"
 	fi
@@ -121,7 +121,7 @@ do
     fi
 done < ${TARGET_ROOTFS_MANIFEST}.manifest
 EOS
-    sudo -E chroot ${ROOTFSDIR} sh -c "(cd /tmp && bash ./dl_dbgsym.sh)"
+    sudo -E chroot ${ROOTFSDIR} sh -c "(cd ${DBGSYMHOME} && bash ./dl_dbgsym.sh)"
 
     ### prepare patched source
     if [ "${PREPARE_PATCHED_SRC}" = "1" ]; then
@@ -137,13 +137,15 @@ EOS
 
     ### clean up and umount output directory
     sudo -E rm ${ROOTFSDIR}/etc/apt/apt.conf.d/50${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/preferences.d/${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/sources.list.d/${EML_SELF_BUILD}.list
-    rm ${ROOTFSDIR}/tmp/${TARGET_ROOTFS_MANIFEST}.manifest
+    rm "${DBGSYMHOME}/dl_dbgsym.sh"
+    rm ${ROOTFSDIR}/${DBGSYMHOME}/${TARGET_ROOTFS_MANIFEST}.manifest
+    rmdir "${DBGSYMHOME}"
     sudo -E umount ${ROOTFSDIR}/proc
     sudo -E umount ${ROOTFSDIR}/dev/pts
     sudo -E umount ${ROOTFSDIR}/dev
     sudo -E umount ${ROOTFSDIR}/tmp
     cleanup_local_isarapt
-    if [ ${not_exist_resolvconf} -ne 0 ]; then
+    if [ ! -e "${ROOTFSDIR}/etc/resolv.conf.orig" ]; then
         sudo -E rm ${ROOTFSDIR}/etc/resolv.conf
     else
         sudo mv ${ROOTFSDIR}/etc/resolv.conf.orig ${ROOTFSDIR}/etc/resolv.conf
