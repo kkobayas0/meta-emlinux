@@ -112,11 +112,17 @@ setup_toolchains_for_container() {
 }
 
 setup_docker_files() {
+    container_sdk_dir="${DEPLOY_DIR_IMAGE}/${PN}-${SDK_FORMATS}"
+    # Remove old directory
+    if [ -d "${container_sdk_dir}" ]; then
+        rm -fr "${container_sdk_dir}"
+    fi
+    mkdir "${container_sdk_dir}"
     templates_dir="${TOPDIR}/../repos/meta-emlinux/templates/containerized-sdk"
-    cp "${templates_dir}/Dockerfile" "${DEPLOY_DIR_IMAGE}"
-    cp "${templates_dir}/docker-compose.yml" "${DEPLOY_DIR_IMAGE}"
-    sed -i "s/@CONTAINER_IMAGE_NAME@/${CONTAINER_IMAGE_NAME}/g" "${DEPLOY_DIR_IMAGE}/Dockerfile"
-    sed -i "s/@CONTAINER_IMAGE_TAG@/${CONTAINER_IMAGE_TAG}/g" "${DEPLOY_DIR_IMAGE}/Dockerfile"
+    cp "${templates_dir}/Dockerfile" "${container_sdk_dir}/"
+    cp "${templates_dir}/docker-compose.yml" "${container_sdk_dir}/"
+    sed -i "s/@CONTAINER_IMAGE_NAME@/${CONTAINER_IMAGE_NAME}/g" "${container_sdk_dir}/Dockerfile"
+    sed -i "s/@CONTAINER_IMAGE_TAG@/${CONTAINER_IMAGE_TAG}/g" "${container_sdk_dir}/Dockerfile"
 }
 
 ROOTFS_POSTPROCESS_COMMAND:append:class-sdk = " rename_installer_script setup_kernel_source_dir"
@@ -134,3 +140,8 @@ setup_kernel_source_dir() {
     (cd ${ROOTFSDIR}/usr/src && sudo ln -s linux-headers-* kernel)
 }
 
+do_move_docker_archive() {
+    mv "${DEPLOY_DIR_IMAGE}/${PN}-${DISTRO}-${DISTRO_ARCH}.${SDK_FORMATS}" "${DEPLOY_DIR_IMAGE}/${PN}-${SDK_FORMATS}"
+}
+
+do_image_docker_archive[postfuncs] += "do_move_docker_archive"
