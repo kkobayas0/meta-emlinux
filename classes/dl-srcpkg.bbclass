@@ -78,6 +78,7 @@ do_install_source_package() {
     sudo -E rm ${ROOTFSDIR}/etc/apt/apt.conf.d/30-${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/preferences.d/${EML_SELF_BUILD} ${ROOTFSDIR}/etc/apt/sources.list.d/${EML_SELF_BUILD}.list
     rm "${ROOTFSDIR}${SRCDIRHOME}/${ROOTFS_PACKAGE_SUFFIX}.manifest"
     sudo -E umount "${ROOTFSDIR}${SRCDIRHOME}"
+    rmdir "${SRCDIRHOME}"
     sudo -E umount ${ROOTFSDIR}/tmp
     cleanup_local_isarapt
     if [ ${not_exist_resolvconf} -ne 0 ]; then
