@@ -40,8 +40,6 @@ do_install_source_package() {
         exit
     fi
 
-    local not_exist_resolvconf=`file '${ROOTFSDIR}'/etc/resolv.conf 2>&1 | grep "cannot open" | wc -c`
-
     ### backup apt status
     sudo sh -c "(cd ${ROOTFSDIR} && tar zcpf apt_status.tar.gz var/cache/apt var/lib/apt)"
 
@@ -57,7 +55,7 @@ do_install_source_package() {
     cp ${ROOTFS_MANIFEST_DEPLOY_DIR}/${ROOTFS_PACKAGE_SUFFIX}.manifest "${ROOTFSDIR}${SRCDIRHOME}"
 
     ### setup network & apt environment
-    if [ ${not_exist_resolvconf} -ne 0 ]; then
+    if [ ! -e "${ROOTFSDIR}/etc/resolv.conf" ]; then
         sudo cp /etc/resolv.conf ${ROOTFSDIR}/etc/resolv.conf
     else
         sudo mv ${ROOTFSDIR}/etc/resolv.conf ${ROOTFSDIR}/etc/resolv.conf.orig
@@ -81,7 +79,7 @@ do_install_source_package() {
     rmdir "${SRCDIRHOME}"
     sudo -E umount ${ROOTFSDIR}/tmp
     cleanup_local_isarapt
-    if [ ${not_exist_resolvconf} -ne 0 ]; then
+    if [ ! -e "${ROOTFSDIR}/etx/resolv.conf.orig" ]; then
         sudo -E rm ${ROOTFSDIR}/etc/resolv.conf
     else
         sudo mv ${ROOTFSDIR}/etc/resolv.conf.orig ${ROOTFSDIR}/etc/resolv.conf
