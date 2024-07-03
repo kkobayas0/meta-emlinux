@@ -31,7 +31,6 @@ IMAGER_INSTALL:wic = "parted \
 
 WKS_FILE ?= "${MACHINE}.wks"
 
-SDK_PREINSTALL += " \
-    linux-headers-${KERNEL_NAME} \
-    bc \
-"
+SDK_PREINSTALL += "bc"
+
+SDK_INSTALL += "linux-headers-${KERNEL_NAME}"
