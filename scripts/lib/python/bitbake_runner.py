@@ -45,6 +45,7 @@ def get_bitbake_information(image):
     pattern_distro_arch = r'\nDISTRO_ARCH="([^"]*)"'
     pattern_repo_isar_dir = r'\nREPO_ISAR_DIR="([^"]*)"'
     pattern_image_distro = r'\nDISTRO="([^"]*)"'
+    pattern_cve_db_predownload = r'\nCVE_DB_PREDOWNLOAD_URL="([^"]*)"'
 
     deploy_image_dir = re.findall(pattern_deploy_image_dir, output)[0]
     deploy_dir = re.findall(pattern_deploy_dir, output)[0]
@@ -57,6 +58,12 @@ def get_bitbake_information(image):
     repo_isar_dir = re.findall(pattern_repo_isar_dir, output)[0]
     image_distro = re.findall(pattern_image_distro, output)[0]
 
+    cve_db_url = re.findall(pattern_cve_db_predownload, output)
+    if not len(cve_db_url) == 0:
+        cve_db_predownload = cve_db_url[0]
+    else:
+        cve_db_predownload = None
+
     dpkg_status = f"{deploy_image_dir}/{image_full_name}.dpkg_status"
     return {
         "deploy_dir": deploy_dir,
@@ -68,4 +75,5 @@ def get_bitbake_information(image):
         "distro_arch": distro_arch,
         "repo_isar_dir": repo_isar_dir,
         "image_distro": image_distro,
+        "cve_db_predownload": cve_db_predownload,
     }

@@ -598,8 +598,15 @@ def main(args):
     cve_data_dl_dir = f"{bitbakeinfo['dl_dir']}/CVE"
     create_directory(cve_data_dl_dir)
 
-    db_file = nvd_cve.update_nvd_db(cve_data_dl_dir, args.nvd_api_key)
-    if db_file is None:
+    predownload_url = None
+    if args.cve_db_predownload:
+        predownload_url = bitbakeinfo["cve_db_predownload"]
+        if predownload_url is None:
+            logger.error("CVE_DB_PREDOWNLOAD_URL variable should be defined in conf/local.conf")
+            exit(1)
+
+    update_result, db_file = nvd_cve.update_nvd_db(cve_data_dl_dir, args.nvd_api_key, predownload_url)
+    if not update_result:
         logger.critical("Faied to fetch CVE database from NVD")
         exit(1)
 
@@ -657,6 +664,7 @@ def parse_options():
             metavar="CVEPRODUCT")
     parser.add_argument("--image-name", dest="image_name", help="EMLinux image name",
             metavar="IMAGENAME", required=True)
+    parser.add_argument("--cve-db-predownload", dest="cve_db_predownload", action="store_true", help="Enable CVE database predownload.URL should be defined by CVE_DB_PREDOWNLOAD_URL in conf/local.conf.")
     parser.add_argument("--verbose", dest="verbose_output", help="Enable verbose output",
             default=False, action="store_true")
 

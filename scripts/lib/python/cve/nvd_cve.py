@@ -7,7 +7,6 @@
 # SPDX-License-Identifier: MIT
 #
 
-import os
 import sqlite3
 import datetime
 import urllib.request
@@ -258,17 +257,39 @@ def initialize_nvd_cve_db(conn):
 
         c.close()
 
-def update_nvd_db(dl_dir, nvd_api_key):
-    db_file = f"{dl_dir}/{CVE_DATABASE_NAME}"
+def predownload_db(predownload_url, db_file):
+    logger.info(f"Download CVE database file from {predownload_url}.")
 
-    conn = sqlite3.connect(db_file)
-    logger.debug(f"Initialize nvd cve database {db_file}")
-    initialize_nvd_cve_db(conn)
+    request = urllib.request.Request(predownload_url)
+    for attempt in range(5):
+        try:
+            r = urllib.request.urlopen(request)
 
-    last_modified = get_last_modified_date(conn)
+            if (r.headers['content-encoding'] == 'gzip'):
+                buf = r.read()
+                raw_data = gzip.decompress(buf)
+            else:
+                raw_data = r.read()
+
+            r.close()
+        except Exception as e:
+            logger.debug(f"CVE databese download: received error ({e}), retrying")
+            time.sleep(6)
+            pass
+        else:
+            with open(db_file, "wb") as f:
+                f.write(raw_data)
+                logger.info(f"Download CVE database file was succeeded.")
+
+            return True
+    else:
+        # We failed at all attempts
+        return False
+
+
+def check_skip_db_update(conn):
     skip_db_update = False
-
-    logger.info("Update NVD CVE database")
+    last_modified = get_last_modified_date(conn)
     if last_modified:
         d1 = datetime.datetime.fromisoformat(datetime.datetime.now().isoformat())
         d2 = datetime.datetime.fromisoformat(last_modified)
@@ -276,20 +297,43 @@ def update_nvd_db(dl_dir, nvd_api_key):
         date_delta = d1 - d2
         if date_delta.total_seconds() < CVE_DB_UPDATE_INTERVAL:
             skip_db_update = True
-            logger.info(f"Last database update is in 1day so skip NVD database update")
         else:
             # Database is too old so that fetch all data
             if date_delta.days > 120:
                 last_modified = None
 
-    if not skip_db_update:
-        if not fetch_all_cves(db_file, conn, last_modified, nvd_api_key):
-            return None
+    return skip_db_update, last_modified
 
-        logger.info("Update last modified date")
-        if update_last_modified_date(conn):
+def update_nvd_db(dl_dir, nvd_api_key, predownload_url):
+    db_file = f"{dl_dir}/{CVE_DATABASE_NAME}"
+    result = False
+
+    conn = sqlite3.connect(db_file)
+    logger.debug(f"Initialize nvd cve database {db_file}")
+    initialize_nvd_cve_db(conn)
+
+    skip_db_update, last_modified = check_skip_db_update(conn)
+
+    if not skip_db_update and predownload_url:
+        # predownload database file is old, download latest file
+        conn.close()
+        logger.info("Predownload CVE database file.")
+        if not predownload_db(predownload_url, db_file):
+            return result, None
+        conn = sqlite3.connect(db_file)
+        # re-check last modified date
+        skip_db_update, last_modified = check_skip_db_update(conn)
+
+    if not skip_db_update:
+        logger.info("Update NVD CVE database")
+        if fetch_all_cves(db_file, conn, last_modified, nvd_api_key):
+            logger.info("Update last modified date")
+            update_last_modified_date(conn)
             conn.commit()
+            result = True
+    else:
+        logger.info(f"Last database update is in 1day so skip NVD database update")
+        result = True
 
     conn.close()
-
-    return db_file
+    return result, db_file
