@@ -41,6 +41,7 @@ CVE_VERSION = "${LINUX_CVE_VERSION}"
 # CVE-2022-36397: This is false positive because it is Intel QAT driver issue.
 # CVE-2021-39801: This is false positive because it is Android kernel issue.
 # CVE-2023-20928: Vulnerable code not present.
+# CVE-2020-0347: Due to the limited information, it is unclear whether this issue is specific to Android or also related to the mainline.
 CVE_CHECK_WHITELIST = "\
     CVE-2021-26934 CVE-2021-43057 CVE-2022-29582 \
     CVE-2021-42327 CVE-2021-45402 CVE-2022-0168 \
@@ -53,5 +54,5 @@ CVE_CHECK_WHITELIST = "\
     CVE-2023-6915 CVE-2023-1611 CVE-2024-26594 \
     CVE-2021-0399 CVE-2021-1076 CVE-2021-29256 \
     CVE-2021-3492 CVE-2021-39802 CVE-2022-36397 \
-    CVE-2021-39801 CVE-2023-20928 \
+    CVE-2021-39801 CVE-2023-20928 CVE-2020-0347 \
 "
