@@ -50,6 +50,7 @@ do_shared_workdir_prepend () {
 # CVE-2022-36397: This is false positive because it is Intel QAT driver issue.
 # CVE-2021-39801: This is false positive because it is Android kernel issue.
 # CVE-2020-0347: Due to the limited information, it is unclear whether this issue is specific to Android or also related to the mainline.
+# CVE-2024-35948: This issue was introduced in 6.7-rc1. 5.10.y is not affected.
 CVE_CHECK_WHITELIST = "\
     CVE-2021-43057 CVE-2015-8955 CVE-2020-8834 \
     CVE-2017-6264 CVE-2017-1000377 CVE-2007-2764 \
@@ -58,4 +59,5 @@ CVE_CHECK_WHITELIST = "\
     CVE-2023-1476 CVE-2021-0399 CVE-2021-1076 \
     CVE-2021-29256 CVE-2021-3492 CVE-2021-39802 \
     CVE-2022-36397 CVE-2021-39801 CVE-2020-0347 \
+    CVE-2024-35948 \
 "
