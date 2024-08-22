@@ -29,6 +29,8 @@ IMAGER_INSTALL:wic = "parted \
   tar \
   fdisk"
 
+IMAGE_PREINSTALL:append = " netbase"
+
 WKS_FILE ?= "${MACHINE}.wks"
 
 SDK_PREINSTALL += "bc"

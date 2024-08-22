@@ -12,6 +12,8 @@ FILESEXTRAPATHS:prepend := "${FILE_DIRNAME}/files:"
 
 DESCRIPTION = "EMLinux 3.x specific customization"
 
+DEBIAN_DEPENDS = "netbase"
+
 inherit dpkg-raw
 
 SRC_URI = " \
