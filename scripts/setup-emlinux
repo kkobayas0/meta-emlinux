@@ -39,13 +39,14 @@ source "${REPOS}/isar/isar-init-build-env" "${ENV_BUILDDIR}"
 ENV_TOPDIR=$(dirname $(pwd))
 
 if [ "${ENV_BUILD_SETUP}" = "true"  ]; then
-  cat <<EOF >"${ENV_TOPDIR}/${ENV_BUILDDIR}/conf/local.conf"
+  cat <<'EOF' >"${ENV_TOPDIR}/${ENV_BUILDDIR}/conf/local.conf"
 # EMLinux configuration
 
 ## ISAR Basic configuratons
 LCONF_VERSION = "6"
 CONF_VERSION = "1"
 ISAR_CROSS_COMPILE = "1"
+include ${LAYERDIR_emlinux}/conf/mc.conf
 
 ## EMLinux user configurations
 USERS += "root"
