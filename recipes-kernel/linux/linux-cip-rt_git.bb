@@ -12,8 +12,8 @@ FILESEXTRAPATHS:prepend := "${FILE_DIRNAME}/files:"
 
 require recipes-kernel/linux/linux-custom.inc
 
-LINUX_CIP_VERSION = "v6.1.102-cip26-rt14"
-PV = "6.1.102-cip26-rt14"
+LINUX_CIP_VERSION = "v6.1.107-cip28-rt15"
+PV = "6.1.107-cip28-rt15"
 SRC_URI += " \
     git://git.kernel.org/pub/scm/linux/kernel/git/cip/linux-cip.git;branch=linux-6.1.y-cip-rt;destsuffix=${P};protocol=https \
     file://preempt-rt.cfg \
@@ -23,6 +23,6 @@ SRC_URI:append:generic-x86-64 = " file://generic-x86-64_defconfig"
 SRC_URI:append:raspberrypi3bplus-64 = " file://raspberrypi3-64_defconfig"
 SRC_URI:append:raspberrypi4b-64 = " file://raspberrypi4-64_defconfig"
 
-SRCREV = "9ad406a6eb9a996cd84fff37c3902a96596ca9e5"
+SRCREV = "011eca2fcf04e750d756fa434f3423f2a6cb73cf"
 
 KBUILD_DEPENDS:append = ", zstd"
