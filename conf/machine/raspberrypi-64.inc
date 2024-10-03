@@ -10,7 +10,7 @@ DISTRO_ARCH ?= "arm64"
 DISTRO_APT_SOURCES:append = " conf/distro/emlinux-bookworm-full.list"
 
 # wic file settings
-IMAGE_FSTYPES ?= "wic wic.xz"
+IMAGE_FSTYPES ?= "wic wic.xz tar.gz"
 WKS_FILE ?= "emlinux-rpi-sdimg.wks.in"
 
 IMAGE_PREINSTALL += "\
