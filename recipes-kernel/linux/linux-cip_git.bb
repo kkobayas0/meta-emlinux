@@ -12,8 +12,8 @@ FILESEXTRAPATHS:prepend := "${FILE_DIRNAME}/files:"
 
 require recipes-kernel/linux/linux-custom.inc
 
-LINUX_CIP_VERSION = "v6.1.111-cip29"
-PV = "6.1.111-cip29"
+LINUX_CIP_VERSION = "v6.1.115-cip31"
+PV = "6.1.115-cip31"
 SRC_URI += " \
     git://git.kernel.org/pub/scm/linux/kernel/git/cip/linux-cip.git;branch=linux-6.1.y-cip;destsuffix=${P};protocol=https \
 "
@@ -26,6 +26,6 @@ SRC_URI:append:raspberrypi3bplus-64 = " file://raspberrypi3-64_defconfig"
 SRC_URI:append:raspberrypi4b-64 = " file://raspberrypi4-64_defconfig"
 
 SRC_URI[sha256sum] = "1caa1b8e24bcfdd55c3cffd8f147f3d33282312989d85c82fc1bc39b808f3d6b"
-SRCREV = "0f19f32122651a230b262ce09853c6e604e18a23"
+SRCREV = "b6d95e014d750e23690fcd0c6e630d2b34587e48"
 
 KBUILD_DEPENDS:append = ", zstd"
