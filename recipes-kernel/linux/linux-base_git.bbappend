@@ -45,6 +45,14 @@ CVE_VERSION = "${LINUX_CVE_VERSION}"
 # CVE-2024-35948: This issue was introduced in 6.7-rc1. 4.19.y is not affected.
 # CVE-2022-48789: This is false positive because 4.19.y is not affected.
 # CVE-2024-21823: This is false positive because 4.19.y is not affected.
+# CVE-2020-26140: This is false positive because Linux Kernel is not affected.
+# CVE-2020-26142: This is false positive because Linux Kernel is not affected.
+# CVE-2020-26143: This is false positive because Linux Kernel is not affected.
+# CVE-2020-26144: This is false positive because it is Samsung Galaxy specific and Mainline Kernel is not affected.
+# CVE-2020-26146: This is false positive because it is Samsung Galaxy specific and Mainline Kernel is not affected.
+# CVE-2021-0961: This is false positive because it is Android Kernel specific.
+# CVE-2021-33096: This is false positive because Linux Kernel is not affected.
+# CVE-2021-39800: This is false positive because 4.19.y is not affected.
 CVE_CHECK_WHITELIST = "\
     CVE-2021-26934 CVE-2021-43057 CVE-2022-29582 \
     CVE-2021-42327 CVE-2021-45402 CVE-2022-0168 \
@@ -59,4 +67,7 @@ CVE_CHECK_WHITELIST = "\
     CVE-2021-3492 CVE-2021-39802 CVE-2022-36397 \
     CVE-2021-39801 CVE-2023-20928 CVE-2020-0347 \
     CVE-2024-35948 CVE-2022-48789 CVE-2024-21823 \
+    CVE-2020-26140 CVE-2020-26142 CVE-2020-26143 \
+    CVE-2020-26144 CVE-2020-26146 CVE-2021-0961 \
+    CVE-2021-33096 CVE-2021-39800 \
 "
