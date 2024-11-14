@@ -26,6 +26,8 @@ SRC_URI[sha256sum] = "1e923f605b5be8c999dd4bdbe0b4e60d637a4d2dceff0c9a9fd3be3148
  
 UPSTREAM_FILE_UNPACK_DIR="${WORKDIR}/firmware-${RPI_FIRMWARE_VERSION}"
 
+DPKG_ARCH = "arm64"
+
 do_install() {
   cp -a ${UPSTREAM_FILE_UNPACK_DIR}/boot ${D}/
   install -d -m 0755 ${D}/usr/share/doc/${PN}/ 
