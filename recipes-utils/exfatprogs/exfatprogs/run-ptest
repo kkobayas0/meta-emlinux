@@ -1,0 +1,71 @@
+#!/bin/sh
+
+rm -f ptest.log || true
+rm -f test_file_creation.log || true
+
+loopdev=$(losetup -f)
+
+mountdir="/mnt/exfatprogs_ptest"
+
+if [ ! -d "${mountdir}" ]; then
+  mkdir "${mountdir}"
+fi
+
+exfat_support=$(grep exfat /proc/filesystems >/dev/null ; echo $?)
+module_installed=0
+
+if [ "${exfat_support}" = "1" ]; then
+  insmod /lib/modules/$(uname -r)/kernel/fs/exfat/exfat.ko
+  if [ $? -ne 0 ]; then
+    echo "Error: This kernel is not supporting exfat filesystem."
+    exit 1
+  fi
+  module_installed=1
+fi
+
+cd tests
+./test_fsck.sh 2>&1 | sed -u -e '/^Passed \.\//s/^Passed \(.*\)/PASS: \1/g' -e '/^Failed/s/^Failed \(.*\)/FAIL: \1/g' | tee ../ptest.log
+cd -
+output=$(tac ./ptest.log | head -n 1)
+
+passed=$(echo "$output" | awk '{print $2}')
+all=$(echo "$output" | awk '{print $4}')
+failed=$((all - passed))
+
+test_fsck_result=1
+test_file_creation_result=1
+
+if [ "$failed" -eq 0 ]; then
+  echo "fsck test passed"
+  test_fsck_result=0
+else
+  echo "fsck test failed"
+fi
+
+
+cd test_file_creation
+./test_file_creation.sh "${mountdir}" "${loopdev}" 2>&1 | tee ../test_file_creation.log
+cd -
+
+test_file_creation_result=$(grep "file/directory creation test passed." ./test_file_creation.log >/dev/null ; echo $?)
+if [ $test_file_creation_result = 0 ]; then
+  echo "PASS: test_file_creation"
+  test_file_creation_result=0
+else
+  echo "FAIL: test_file_creation"
+fi
+
+umount "${mountdir}"
+losetup -d "${loopdev}"
+rm -fr "${mountdir}"
+
+if [ $module_installed = 1 ]; then
+  rmmod exfat
+fi
+
+if [ $test_fsck_result = 0 ] && [ $test_file_creation_result = 0 ]; then
+  exit 0
+fi
+
+exit 1
+
