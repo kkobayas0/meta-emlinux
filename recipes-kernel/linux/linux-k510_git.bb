@@ -61,6 +61,10 @@ do_shared_workdir_prepend () {
 # CVE-2021-39800: This is false positive because 4.19.y is not affected.
 # CVE-2022-20158: This is false positive because it is Android Kernel specific.
 # CVE-2022-26047: This is false positive because Linux Kernel is not affected.
+# CVE-2024-46705: Vulnerable code not present.
+# CVE-2024-50242: Vulnerable code not present.
+# CVE-2024-50246: Vulnerable code not present.
+# CVE-2022-48950: Vulnerable code not present.
 CVE_CHECK_WHITELIST = "\
     CVE-2021-43057 CVE-2015-8955 CVE-2020-8834 \
     CVE-2017-6264 CVE-2017-1000377 CVE-2007-2764 \
@@ -72,5 +76,6 @@ CVE_CHECK_WHITELIST = "\
     CVE-2024-35948 CVE-2020-26140 CVE-2020-26142 \
     CVE-2020-26143 CVE-2020-26144 CVE-2020-26146 \
     CVE-2021-0961 CVE-2021-33096 CVE-2021-39800 \
-    CVE-2022-20158 CVE-2022-26047 \
+    CVE-2022-20158 CVE-2022-26047 CVE-2024-46705 \
+    CVE-2024-50242 CVE-2024-50246 CVE-2022-48950 \
 "
