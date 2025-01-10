@@ -71,6 +71,13 @@ do_shared_workdir_prepend () {
 # CVE-2024-26768: Vulnerable code not present.
 # CVE-2024-35866: Vulnerable code not present.
 # CVE-2024-50108: Vulnerable code not present.
+# CVE-2023-39179: This is false positive because vulnerable code not present.
+# CVE-2023-52479: This is false positive because vulnerable code not present.
+# CVE-2023-20941: This is false positive because it is an Android kernel issue.
+# CVE-2023-39176: This is false positive because vulnerable code not present.
+# CVE-2023-39180: This is false positive because vulnerable code not present.
+# CVE-2023-47210: This is false positive because it is a Firmware issue.
+# CVE-2023-52508: This is false positive because vulnerable code not present.
 CVE_CHECK_WHITELIST = "\
     CVE-2021-43057 CVE-2015-8955 CVE-2020-8834 \
     CVE-2017-6264 CVE-2017-1000377 CVE-2007-2764 \
@@ -86,4 +93,7 @@ CVE_CHECK_WHITELIST = "\
     CVE-2024-50242 CVE-2024-50246 CVE-2022-48950 \
     CVE-2023-52511 CVE-2024-26648 CVE-2024-50003 \
     CVE-2024-26768 CVE-2024-35866 CVE-2024-50108 \
+    CVE-2023-39179 CVE-2023-52479 CVE-2023-20941 \
+    CVE-2023-39176 CVE-2023-39180 CVE-2023-47210 \
+    CVE-2023-52508 \
 "
