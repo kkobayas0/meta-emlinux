@@ -64,6 +64,12 @@ CVE_VERSION = "${LINUX_CVE_VERSION}"
 # CVE-2024-35866: Vulnerable code not present.
 # CVE-2024-50108: Vulnerable code not present.
 # CVE-2024-26647: Vulnerable code not present.
+# CVE-2024-26944: Vulnerable code not present.
+# CVE-2024-49939: Vulnerable code not present.
+# CVE-2024-50090: Vulnerable code not present.
+# CVE-2024-50091: Vulnerable code not present.
+# CVE-2024-50111: Vulnerable code not present.
+# CVE-2024-50244: Vulnerable code not present.
 CVE_CHECK_WHITELIST = "\
     CVE-2021-26934 CVE-2021-43057 CVE-2022-29582 \
     CVE-2021-42327 CVE-2021-45402 CVE-2022-0168 \
@@ -84,5 +90,7 @@ CVE_CHECK_WHITELIST = "\
     CVE-2024-50242 CVE-2024-50246 CVE-2022-48950 \
     CVE-2023-52511 CVE-2024-26648 CVE-2024-50003 \
     CVE-2024-26768 CVE-2024-35866 CVE-2024-50108 \
-    CVE-2024-26647 \
+    CVE-2024-26647 CVE-2024-26944 CVE-2024-49939 \
+    CVE-2024-50090 CVE-2024-50091 CVE-2024-50111 \
+    CVE-2024-50244 \
 "
